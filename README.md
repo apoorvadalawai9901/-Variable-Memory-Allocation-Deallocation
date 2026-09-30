@@ -354,6 +354,7 @@ Rebinding `a` does not change the object referenced by `b`. With a mutable objec
 a = [10, 20]
 b = a
 
+
 b.append(30)
 print(a)  # [10, 20, 30]
 ```
