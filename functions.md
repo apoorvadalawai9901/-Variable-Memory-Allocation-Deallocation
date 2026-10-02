@@ -607,6 +607,170 @@ show(name="Apoorva", age=21)
 
 ## 23. Final thought
 
-Understanding functions is a major step in learning Python. Once you are comfortable with them, you can build larger and more advanced programs with much less confusion. Functions are not just a coding trick—they are the foundation of good programming structure.
+Understanding functions is a major step in learning Python. Once you are comfortable with them, you can build larger and more advanced programs with much less confusion. Functions are not just a coding trick - they are the foundation of good programming structure.
 
-    
+## 24. Function calling flow
+
+When a function is called, Python transfers control to it, passes the arguments, runs its statements, and returns control to the calling line.
+
+```python
+def multiply(a, b):
+    return a * b
+
+result = multiply(5, 4)
+print(result)
+```
+
+The function receives `5` and `4`, calculates their product, returns `20`, and stores it in `result`.
+
+---
+
+## 25. Functions are objects
+
+In Python, a function is an object. It can be stored in another variable and called through that variable.
+
+```python
+def greet():
+    print("Hello world")
+
+x = greet
+x()
+```
+
+`greet` refers to the function, while `greet()` calls it.
+
+---
+
+## 26. Passing a function to another function
+
+Functions can be passed as arguments to other functions.
+
+```python
+def square(value):
+    return value * value
+
+def process(function, value):
+    return function(value)
+
+print(process(square, 5))
+```
+
+Output: `25`
+
+---
+
+## 27. Higher-order functions
+
+A higher-order function accepts another function as an argument or returns a function as its result. The `process()` function above is a higher-order function.
+
+---
+
+## 28. Lambda functions
+
+A lambda is a small anonymous function written in a single expression.
+
+```python
+square = lambda value: value * value
+print(square(5))
+
+numbers = [1, 2, 3, 4]
+result = list(map(lambda value: value * 2, numbers))
+print(result)
+```
+
+---
+
+## 29. Recursion
+
+Recursion is a technique in which a function calls itself. A recursive function needs a base case so that the calls eventually stop.
+
+```python
+def countdown(number):
+    if number == 0:
+        return
+    print(number)
+    countdown(number - 1)
+
+countdown(5)
+```
+
+The condition `number == 0` is the base case.
+
+---
+
+## 30. Function documentation
+
+A docstring documents what a function does.
+
+```python
+def add(a, b):
+    """Return the sum of two numbers."""
+    return a + b
+
+print(add.__doc__)
+```
+
+---
+
+## 31. Type hints
+
+Type hints communicate the expected types of parameters and return values. Python generally does not enforce them automatically at runtime.
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+```
+
+---
+
+## 32. A practical program: electricity bill
+
+Functions separate the calculation from the input and output parts of a program.
+
+```python
+def calculate_bill(units):
+    if units <= 100:
+        amount = units * 2
+    elif units <= 200:
+        amount = 100 * 2 + (units - 100) * 4
+    else:
+        amount = 100 * 2 + 100 * 4 + (units - 200) * 6
+    return amount + 100
+
+units = int(input("Enter units: "))
+bill = calculate_bill(units)
+print("Bill:", bill)
+```
+
+Functions provide separation of responsibility, reusability, easier testing, better readability, and easier maintenance.
+
+---
+
+## 33. Function design
+
+A good function generally has input, processing, and output. Each function should have a clear purpose and a meaningful name.
+
+---
+
+## 34. Do not create giant functions
+
+A large function that handles every part of a system is difficult to read, test, and maintain. Separate responsibilities into smaller functions:
+
+```python
+def get_student():
+    pass
+
+def validate_student(student):
+    pass
+
+def calculate_student(student):
+    pass
+
+def save_student(student):
+    pass
+
+def display_student(student):
+    pass
+```
+
+This follows the single responsibility principle: each function should focus on one main task.
