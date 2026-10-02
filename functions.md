@@ -774,3 +774,225 @@ def display_student(student):
 ```
 
 This follows the single responsibility principle: each function should focus on one main task.
+
+---
+
+## 35. Explanation of the task functions
+
+Each task file separates reusable logic from keyboard input. The task function accepts arguments, performs its calculation or decision, and returns a result. The `main()` function reads input, calls the task function, and displays the result.
+
+### Task 1: `calculator.py` - `calculate(first_number, second_number)`
+
+This function accepts two numbers and returns a dictionary containing addition, subtraction, multiplication, division, floor division, and remainder. The dictionary lets the caller retrieve a result by name, such as `results["Addition"]`. Before calculating division, floor division, and remainder, it checks whether the second number is zero; those values are then reported as undefined, while addition, subtraction, and multiplication still work. For example, `calculate(10, 3)` returns 13, 7, 30, about 3.33, 3, and 1 respectively.
+
+### Task 2: `number_check.py` - `check_number(number)`
+
+This function checks three conditions using the remainder operator: `number % 2 == 0`, `number % 3 == 0`, and `number % 5 == 0`. Each comparison produces a Boolean value, and the function returns the values in a dictionary. For example, 15 is odd, divisible by 3, and divisible by 5. The main program converts the input to an integer and displays the results.
+
+### Task 3: `marks_result.py` - `get_result(marks)`
+
+This function uses conditional statements to return one string. It checks `marks >= 75` first and returns `Distinction`. If that condition is false, it checks `marks >= 35` and returns `Pass`. If neither condition is true, it returns `Fail`. Checking distinction first matters because marks of 75 or more also meet the pass threshold.
+
+### Task 4: `student_eligibility.py` - `check_eligibility(marks, attendance, has_backlog)`
+
+This function uses `and` to require all three rules to pass: marks are at least 60, attendance is at least 75, and `has_backlog` is false. It returns `Eligible` only when the combined condition is true; otherwise, it returns `Not eligible`. The input `has_backlog` must be a Boolean (`True` or `False`), not the text `"true"` or `"false"`.
+
+### Task 5: `user_validation.py` - `validate_user(username, password)`
+
+The function compares the username and password with the required strings, then combines the comparisons with `and`. It returns `True` only for the exact pair `admin` and `python123`; if either comparison fails, it returns `False`. Matching is case-sensitive. This fixed credential check is for learning comparisons and is not suitable for real authentication.
+
+### Task 6: `discount.py` - `calculate_discount(purchase_amount)`
+
+The function first raises `ValueError` if the purchase amount is negative. It then chooses one rate: 20% for amounts of 5000 or more, 10% for amounts from 3000 up to 5000, and 5% below 3000. It calculates the discount and subtracts it from the purchase amount. It returns both numbers as a tuple, so the caller can write `discount, payable = calculate_discount(4000)`; the values are 400 and 3600.
+
+### Task 7: `access_control.py` - `check_access(age, has_id, is_employee)`
+
+The rule is `(age >= 18 and has_id) or is_employee`. The person needs both adult age and an ID for the first path, but employee status independently grants access. The function returns `Access granted` or `Access denied`. The helper `read_yes_no()` converts typed yes/no answers into Boolean values so the rule receives the expected types.
+
+### Task 8: `skill_check.py` - `check_skill(skill_name)`
+
+The function checks whether the provided string is in the `REQUIRED_SKILLS` list using Python's membership operator, `in`. It returns `Skill available` when found and `Skill not available` otherwise. The comparison is case-sensitive: `SQL` matches, while `sql` does not. `main()` strips leading and trailing spaces before calling the function.
+
+### Task 9: `operator_calculator.py` - `calculate(a, operator, b)`
+
+The function uses the `operator` string to choose `+`, `-`, `*`, `/`, `//`, `%`, or `**`. It returns the result of the selected operation. For `/`, `//`, and `%`, a zero value for `b` raises `ZeroDivisionError`. If the operator is not one of the supported strings, it raises `ValueError`. The `main()` function catches these errors and prints their messages.
+
+### Task 10: `placement.py` - `assess_placement(age, marks, attendance, experience, has_backlog)`
+
+The function returns a dictionary with placement eligibility and candidate category. Eligibility is `Yes` when marks are at least 60, attendance is at least 75, and there is no backlog; otherwise it is `No`. Experience determines the category: 0 is `fresher`, 1 through 2 is `junior`, and more than 2 is `experienced`. Age is accepted as an argument but does not affect eligibility because the task defines no age rule.
+
+For example, `assess_placement(22, 70, 80, 1, False)` returns eligibility `Yes` and category `junior`. The caller reads each result using a dictionary key, such as `result["candidate_category"]`.
+
+### How to call a task function
+
+```python
+result = get_result(80)
+print(result)
+```
+
+The function call passes `80` as the `marks` argument. The return value is stored in `result`, then `print()` displays it. Returning a value instead of printing inside the function makes the function easier to reuse and test.
+
+## 36. Code-wise walkthroughs
+
+The comments beside the code explain what each important line does. These are focused on the reusable functions; each file's `main()` function reads input, calls the function, and displays its result.
+
+### Task 1: Calculator
+
+```python
+def calculate(first_number, second_number):  # Receive the two numbers to calculate with.
+    if second_number == 0:                    # Check before using division-based operators.
+        division_results = {                  # Store messages for operations that need a nonzero divisor.
+            "Division": "undefined",
+            "Floor division": "undefined",
+            "Remainder": "undefined",
+        }
+    else:
+        division_results = {                  # Calculate each division-based result.
+            "Division": first_number / second_number,
+            "Floor division": first_number // second_number,
+            "Remainder": first_number % second_number,
+        }
+    return {                                   # Return all answers together in a dictionary.
+        "Addition": first_number + second_number,
+        "Subtraction": first_number - second_number,
+        "Multiplication": first_number * second_number,
+        **division_results,
+    }
+```
+
+The `**division_results` in this dictionary copies its key/value pairs into the result. This use of `**` is dictionary unpacking; it is different from exponentiation in Task 9.
+
+### Task 2: Number check
+
+```python
+def check_number(number):                  # Receive the integer to test.
+    return {
+        "Even": number % 2 == 0,           # Even numbers have no remainder when divided by 2.
+        "Divisible by 3": number % 3 == 0,  # A zero remainder means divisible by 3.
+        "Divisible by 5": number % 5 == 0,  # A zero remainder means divisible by 5.
+    }                                        # Return all three True/False answers.
+```
+
+For `check_number(15)`, the function returns false for even, and true for divisible by 3 and 5.
+
+### Task 3: Marks result
+
+```python
+def get_result(marks):       # Receive the student's marks.
+    if marks >= 75:           # Check distinction before the lower pass threshold.
+        return "Distinction"  # Return ends the function immediately.
+    if marks >= 35:           # This is checked only when marks are below 75.
+        return "Pass"
+    return "Fail"             # Reached only when marks are below 35.
+```
+
+### Task 4: Student eligibility
+
+```python
+def check_eligibility(marks, attendance, has_backlog):
+    # and requires every listed condition to be true.
+    if marks >= 60 and attendance >= 75 and not has_backlog:
+        return "Eligible"      # The student passes all three requirements.
+    return "Not eligible"     # At least one requirement was false.
+```
+
+`not has_backlog` is true when `has_backlog` is `False`. The function receives a Boolean for backlog status.
+
+### Task 5: User validation
+
+```python
+def validate_user(username, password):
+    # Each == checks for an exact match; and requires both matches.
+    return username == "admin" and password == "python123"
+```
+
+The returned value is a Boolean: `True` for the exact pair, otherwise `False`.
+
+### Task 6: Discount
+
+```python
+def calculate_discount(purchase_amount):
+    if purchase_amount < 0:  # Reject an amount that is not a valid purchase total.
+        raise ValueError("Purchase amount cannot be negative.")
+    if purchase_amount >= 5000:  # Check the highest price tier first.
+        discount_rate = 0.20
+    elif purchase_amount >= 3000:  # This tier applies below 5000.
+        discount_rate = 0.10
+    else:  # All remaining non-negative amounts are below 3000.
+        discount_rate = 0.05
+    discount_amount = round(purchase_amount * discount_rate, 2)  # Calculate discount.
+    final_amount = round(purchase_amount - discount_amount, 2)  # Subtract discount.
+    return discount_amount, final_amount  # Return a pair of values (a tuple).
+```
+
+The order of the thresholds prevents a purchase of 5000 from receiving the 10% rate.
+
+### Task 7: Access control
+
+```python
+def check_access(age, has_id, is_employee):
+    # First route requires both age and ID; employee status is an alternate route.
+    if (age >= 18 and has_id) or is_employee:
+        return "Access granted"
+    return "Access denied"  # Neither route allowed access.
+```
+
+The parentheses group the age and ID checks. `or is_employee` means an employee can get access even if the first route is false.
+
+### Task 8: Skill check
+
+```python
+REQUIRED_SKILLS = ["python", "SQL", "Git", "HTML"]  # Skills accepted by this program.
+
+def check_skill(skill_name):              # Receive the skill to look for.
+    if skill_name in REQUIRED_SKILLS:     # in checks list membership.
+        return "Skill available"
+    return "Skill not available"          # Returned when no exact match is found.
+```
+
+### Task 9: Operator calculator
+
+```python
+def calculate(a, operator, b):
+    if operator == "+":                 # Compare the requested operator.
+        return a + b                      # Calculate and return the result.
+    if operator == "-":
+        return a - b
+    if operator == "*":
+        return a * b
+    if operator in ("/", "//", "%") and b == 0:
+        raise ZeroDivisionError("Cannot divide by zero.")  # Stop unsafe operations.
+    if operator == "/":
+        return a / b
+    if operator == "//":
+        return a // b
+    if operator == "%":
+        return a % b
+    if operator == "**":
+        return a ** b                      # Raise a to the power b.
+    raise ValueError("Invalid operator")  # Reached if no supported operator matched.
+```
+
+Each successful branch returns immediately, so the function performs only the requested operation. The zero check happens before the division branches.
+
+### Task 10: Placement eligibility
+
+```python
+def assess_placement(age, marks, attendance, experience, has_backlog):
+    if experience == 0:                    # No work experience.
+        category = "fresher"
+    elif 1 <= experience <= 2:              # Inclusive range: 1 through 2 years.
+        category = "junior"
+    else:
+        category = "experienced"            # More than 2 years, for valid nonnegative input.
+
+    eligible = marks >= 60 and attendance >= 75 and not has_backlog
+    # All three placement requirements must pass.
+    return {
+        "placement_eligible": "Yes" if eligible else "No",  # Choose Yes or No.
+        "candidate_category": category,                     # Include experience group.
+    }
+```
+
+The `age` parameter is accepted but not used because the task does not specify an age rule. The function returns a dictionary, so the caller can print each result using its key.
+
